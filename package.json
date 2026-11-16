@@ -1,9 +1,18 @@
 {
   "name": "einkaufen-preisserver",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "Preisserver mit optionalem MCP-Adapter (standardmaessig deaktiviert)",
+  "description": "Privater Preisserver, MCP 0.7.4 MIT exakt gepinnt",
   "type": "module",
-  "engines": { "node": ">=20" },
-  "scripts": { "start": "node server.js", "test": "node --test" }
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "postinstall": "node scripts/copy-license.mjs"
+  },
+  "dependencies": {
+    "@nicktcode/swissgroceries-mcp": "0.7.4"
+  }
 }

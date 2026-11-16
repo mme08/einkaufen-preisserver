@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: einkaufen-preisserver
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PRICE_PROVIDER_ENABLED
+        value: "true"
+      - key: PRICE_API_TOKEN
+        sync: false
