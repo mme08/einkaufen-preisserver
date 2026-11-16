@@ -1,8 +1,8 @@
 {
   "name": "einkaufen-preisserver",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Kostenloser API-Grundserver fuer die private Einkaufen-App",
+  "description": "Preisserver mit optionalem MCP-Adapter (standardmaessig deaktiviert)",
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": { "start": "node server.js", "test": "node --test" }

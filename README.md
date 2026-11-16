@@ -1,36 +1,33 @@
-# Einkaufen Preisserver – Grundgerüst
+# Einkaufen Preisserver 0.2
 
-Kostenloser Node.js-API-Server für die private Android-App **Einkaufen**.
+Render-kompatibler Node.js-Server mit optionaler generischer MCP-Anbindung.
 
-**Stand:** Der Webserver funktioniert, aber es gibt **noch keine echte Händler-Preisanbindung**. Die Suche liefert bewusst HTTP 503 und keine erfundenen Preise. Die acht Händler sind nur als geplante Quellen registriert.
+## Status
 
-## API
+Die externe Preisabfrage ist **standardmaessig deaktiviert**. Es wird kein Code von `swissgroceries-mcp` mitgeliefert oder automatisch installiert. Die Nutzungslizenz muss vor Aktivierung geklaert werden. Der Preisserver funktioniert ohne zusaetzliche npm-Pakete.
 
-- `GET /health` – Status des Webservers
-- `GET /api/chains` – acht geplante Händler
-- `GET /api/search?q=Milch&chains=coop,migros` – derzeit HTTP 503, bis eine zulässige Datenquelle angebunden ist
+## Render
 
-## Lokal testen
+Build Command: `npm install`  
+Start Command: `npm start`  
+Compute: Free
 
-Node.js 20 oder neuer:
+**Keine Umgebungsvariablen setzen**, solange keine ausdrueckliche Freigabe vorliegt. Danach sind folgende Variablen fuer einen geeigneten, separat bereitgestellten MCP-Server vorgesehen:
 
-```bash
-npm test
-npm start
-```
+- `PRICE_PROVIDER_ENABLED=true`
+- `MCP_COMMAND` (ausfuehrbare Datei des MCP-Servers)
+- `MCP_ARGS_JSON` (JSON-Array von Argumenten)
 
-Dann `http://localhost:10000/health` öffnen.
+Diese Variablen nicht setzen, bevor der MCP-Server vorhanden, geprueft und lizenziert ist. Die `coopcity`-Abdeckung muss mit der eingesetzten MCP-Version separat verifiziert werden.
 
-## Auf Render Free bereitstellen
+## Endpunkte
 
-1. Diese Dateien in ein eigenes GitHub-Repository hochladen (keine Zugangsdaten oder privaten Android-Dateien).
-2. Render > New > Web Service > Repository auswählen.
-3. Runtime: **Node**; Build Command: `npm install`; Start Command: `npm start`.
-4. **Free** auswählen und keine kostenpflichtigen Zusatzdienste aktivieren.
-5. Nach dem Deploy die angezeigte URL mit `/health` öffnen.
+- `GET /health`
+- `GET /api/chains`
+- `GET /api/search?q=Milch&chains=coop,migros`
 
-**Wichtig:** Render-Free-Verfügbarkeit und Limits vor dem Bestätigen auf der Render-Seite prüfen. Der Server ist ohne Authentifizierung öffentlich erreichbar; vor einer echten Preisabfrage müssen Zugriffsschutz, Rate-Limits, Caching und Nutzungsbedingungen ergänzt werden.
+Ein 503 bei der Suche bedeutet, dass die Livepreis-Anbindung noch nicht freigeschaltet ist. Es werden keine Beispielpreise als echte Preise ausgegeben. Filialpreise Thun/Heimberg sind noch nicht implementiert.
 
-## swissgroceries-mcp
+## Test
 
-Das externe Projekt https://github.com/nicktcode/swissgroceries-mcp unterstützt laut README Coop, Migros, Aldi, Lidl, Denner, Volgshop, Otto's und Coop City. Seine aktuelle PolyForm-Shield-Lizenz untersagt bestimmte konkurrierende Einkaufs-/Preisvergleichs-Apps auch bei kostenloser Bereitstellung. Der hier bereitgestellte Server **enthält keinen Code dieses Projekts und bindet es noch nicht ein**. Vor einer Integration Lizenzfreigabe einholen oder eine zulässige Alternative prüfen.
+`npm test`
