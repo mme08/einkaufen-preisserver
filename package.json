@@ -14,6 +14,6 @@
     "probe:compat": "node scripts/probe-compatibility.mjs"
   },
   "dependencies": {
-    "@nicktcode/swissgroceries-mcp": "0.7.4"
+   "@nicktcode/swissgroceries-mcp": "0.11.1"
   }
 }
