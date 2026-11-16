@@ -1,6 +1,6 @@
 {
   "name": "einkaufen-preisserver",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "description": "Privater Preisserver, MCP 0.7.4 MIT exakt gepinnt",
   "type": "module",
@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
-    "postinstall": "node scripts/copy-license.mjs"
+    "postinstall": "node scripts/copy-license.mjs",
+    "probe:compat": "node scripts/probe-compatibility.mjs"
   },
   "dependencies": {
     "@nicktcode/swissgroceries-mcp": "0.7.4"

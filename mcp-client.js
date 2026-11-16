@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
 import { createInterface } from 'node:readline';
 
-// One pinned local MCP process per request. No user-supplied commands or arguments.
-export function callMcpTool({ tool, input, timeoutMs = 30000 }) {
+// Deliberately invokes the locally installed, pinned package. Never accepts
+// an executable, version string or command from an HTTP caller.
+function mcpRequest({ tool, input, listOnly = false, timeoutMs = 30000 }) {
   return new Promise((resolve, reject) => {
     const child = spawn('npx', ['--no-install', '@nicktcode/swissgroceries-mcp'], {
       stdio: ['pipe', 'pipe', 'pipe'], env: process.env
@@ -30,6 +31,7 @@ export function callMcpTool({ tool, input, timeoutMs = 30000 }) {
         send({ jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} });
       } else if (msg.id === 2) {
         if (msg.error) return finish(new Error('mcp_tools_list_failed'));
+        if (listOnly) return finish(null, msg.result?.tools ?? []);
         const schema = msg.result?.tools?.find(t => t.name === tool)?.inputSchema;
         if (!schema) return finish(new Error('mcp_search_tool_unavailable'));
         const props = schema.properties ?? {};
@@ -51,11 +53,16 @@ export function callMcpTool({ tool, input, timeoutMs = 30000 }) {
     });
     send({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {
       protocolVersion: '2025-03-26', capabilities: {},
-      clientInfo: { name: 'einkaufen-preisserver', version: '0.4.0' }
+      clientInfo: { name: 'einkaufen-preisserver', version: '0.4.1' }
     } });
   });
 }
-
+export function callMcpTool({ tool, input, timeoutMs = 30000 }) {
+  return mcpRequest({ tool, input, timeoutMs });
+}
+export function listMcpTools({ timeoutMs = 12000 } = {}) {
+  return mcpRequest({ listOnly: true, timeoutMs });
+}
 export function extractSearchResult(toolResult) {
   if (toolResult?.structuredContent) return toolResult.structuredContent;
   for (const block of toolResult?.content ?? []) {

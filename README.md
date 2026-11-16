@@ -1,3 +1,7 @@
+# Vorbereitung auf zukünftige Releases
+
+Siehe **UPGRADE_0_10_PREPARATION.md**. Die aktuell aktive Abhängigkeit bleibt exakt **0.7.4**. `npm test` führt jetzt zehn Offline-Tests aus.
+
 # Einkaufen Preisserver – Private Live-Suche (v0.6.23)
 
 ## Lizenz und feste Version
