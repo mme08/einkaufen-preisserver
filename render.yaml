@@ -1,15 +1,16 @@
+# Eigenstaendiger Testdienst. Nicht den Produktivdienst ersetzen.
 services:
   - type: web
-    name: einkaufen-preisserver
+    name: einkaufen-preisserver-staging
     runtime: node
     plan: free
-    buildCommand: npm install --omit=dev
+    buildCommand: npm install --omit=dev --save-exact
     startCommand: npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PRICE_PROVIDER_ENABLED
-        value: "true"
+        value: "false"
       - key: PRICE_API_TOKEN
         sync: false

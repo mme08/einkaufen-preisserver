@@ -36,6 +36,16 @@ function mcpRequest({ tool, input, listOnly = false, timeoutMs = 30000 }) {
         if (!schema) return finish(new Error('mcp_search_tool_unavailable'));
         const props = schema.properties ?? {};
         const args = {};
+        if (tool === 'get_promotions') {
+          if ('chains' in props) args.chains = input.chains;
+          if ('query' in props && input.query) args.query = input.query;
+          if ('limit' in props) args.limit = input.limit;
+          for (const required of schema.required ?? []) {
+            if (!(required in args)) return finish(new Error(`mcp_required_argument_unsupported_${required}`));
+          }
+          send({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: tool, arguments: args } });
+          return;
+        }
         if ('query' in props) args.query = input.query;
         else if ('q' in props) args.q = input.query;
         else return finish(new Error('mcp_search_query_argument_unknown'));
