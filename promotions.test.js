@@ -24,3 +24,17 @@ test('reject unknown retailers', async () => {
   process.env.PRICE_API_TOKEN = 's'.repeat(40);
   assert.equal((await request('/api/promotions?chains=unknown', { auth:true })).status, 400);
 });
+
+test('valid additional chain passes validation before checking provider availability', async () => {
+  process.env.PRICE_API_TOKEN = 's'.repeat(40);
+  process.env.PRICE_PROVIDER_ENABLED = 'false';
+  for (const chain of ['aldi', 'lidl', 'denner', 'volgshop', 'ottos', 'coopcity']) {
+    const response = await request(`/api/promotions?chains=${chain}`, { auth: true });
+    assert.equal(response.status, 503, chain);
+  }
+});
+test('all eight chains pass validation', async () => {
+  process.env.PRICE_API_TOKEN = 's'.repeat(40);
+  process.env.PRICE_PROVIDER_ENABLED = 'false';
+  assert.equal((await request('/api/promotions?chains=coop,migros,aldi,lidl,denner,volgshop,ottos,coopcity', { auth: true })).status, 503);
+});

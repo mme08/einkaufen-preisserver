@@ -65,13 +65,18 @@ function moneyCents(value) {
     return moneyCents(value.amount ?? value.value ?? value.current ?? value.price);
   return null;
 }
+function normalizePromotionChain(value) {
+  const chain = String(value || '').toLowerCase().trim().replace(/[\s_-]+/g, '');
+  return chain === "otto's" || chain === 'ottos' ? 'ottos' :
+    chain === 'coopcity' ? 'coopcity' : chain;
+}
 function normalizePromotions(data, requested) {
   const groups = data.byChain ?? data.by_chain ?? data.results ?? {};
   const all = Array.isArray(data) ? data :
     Array.isArray(data.promotions) ? data.promotions :
     Array.isArray(data.deals) ? data.deals :
     Array.isArray(data.items) ? data.items : null;
-  const entries = all ? all.map(p => ({ p, chain: String(p.chain ?? p.store ?? p.retailer ?? '').toLowerCase() })) :
+  const entries = all ? all.map(p => ({ p, chain: normalizePromotionChain(p.chain ?? p.store ?? p.retailer ?? (requested.length === 1 ? requested[0] : '')) })) :
     requested.flatMap(chain => {
       const group = groups[chain];
       const arr = Array.isArray(group) ? group : group?.promotions ?? group?.deals ?? group?.items ?? [];
@@ -101,7 +106,7 @@ function normalizePromotions(data, requested) {
     result.push({ name: name.trim().slice(0, 200), chain,
       priceCents, oldPriceCents: oldPriceCents != null && (priceCents == null || oldPriceCents > priceCents) ? oldPriceCents : null,
       discountLabel, validUntil: validUntilText, sizeLabel: String(size).slice(0, 70) });
-    if (result.length >= 100) break;
+    if (result.length >= 250) break;
   }
   return result;
 }
@@ -109,8 +114,8 @@ const promotionCache = new Map();
 async function promotionsHandler(url, res) {
   const requested = [...new Set((url.searchParams.get('chains') || 'coop,migros')
     .split(',').map(x => x.trim().toLowerCase()))];
-  if (!requested.length || requested.some(x => !['coop', 'migros'].includes(x)))
-    return send(res, 400, { error: 'invalid_chain' });
+  if (!requested.length || requested.length > CHAINS.length || requested.some(x => !CHAINS.includes(x)))
+    return send(res, 400, { error: 'invalid_chain', supportedChains: CHAINS });
   if (!enabled()) return send(res, 503, { error: 'price_provider_not_configured' });
   const key = requested.slice().sort().join(',');
   const hit = promotionCache.get(key);
